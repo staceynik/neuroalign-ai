@@ -1,0 +1,177 @@
+{
+  "name": "NeuroAlign AI — Document Accessibility Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "neuroalign-input",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "trigger-webhook",
+      "name": "Receive document",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 300],
+      "webhookId": "neuroalign-input",
+      "notes": "Entry point. Send a POST request with JSON body:\n{\n  \"text\": \"your document text here\",\n  \"modes\": [\"attention\"],\n  \"email\": \"user@example.com\" (optional, for email delivery)\n}"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:8000/transform",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "text",
+              "value": "={{ $json.body.text }}"
+            },
+            {
+              "name": "modes",
+              "value": "={{ $json.body.modes || ['attention'] }}"
+            },
+            {
+              "name": "reading_density",
+              "value": "={{ $json.body.reading_density || 'low' }}"
+            },
+            {
+              "name": "structure_level",
+              "value": "={{ $json.body.structure_level || 'high' }}"
+            },
+            {
+              "name": "visual_support",
+              "value": "={{ $json.body.visual_support || 'high' }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "id": "neuroalign-api",
+      "name": "NeuroAlign Transform",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [480, 300],
+      "notes": "Calls the NeuroAlign FastAPI endpoint.\nResponse contains: final_markdown, mermaid_diagram, chart_data, readability metrics, cost_usd."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "check-status",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "success",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "check-success",
+      "name": "Transform succeeded?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [720, 300],
+      "notes": "Routes to delivery on success, error handler on failure."
+    },
+    {
+      "parameters": {
+        "jsCode": "const result = $input.first().json;\n\n// Build a clean HTML email body from the Markdown output\nconst md = result.final_markdown || '';\nconst cost = (result.cost_usd * 100).toFixed(4);\nconst delta = result.readability?.flesch_ease_delta?.toFixed(1) || 'n/a';\nconst modes = result.readability?.profile || 'unknown';\n\nconst hasDiagram = !!result.mermaid_diagram;\nconst hasChart   = !!(result.chart_data?.data_points?.length);\n\nreturn [{\n  json: {\n    session_id:     result.session_id,\n    markdown:       md,\n    mermaid:        result.mermaid_diagram || null,\n    chart_data:     result.chart_data || null,\n    summary: {\n      modes,\n      cost_cents:       cost,\n      readability_gain: delta,\n      has_diagram:      hasDiagram,\n      has_chart:        hasChart,\n      duration_seconds: result.duration_seconds,\n    },\n    email_subject: `NeuroAlign: your adapted document is ready`,\n    email_html: `\n<h2>Your NeuroAlign document is ready</h2>\n<p><strong>Support modes:</strong> ${modes}</p>\n<p><strong>Readability improvement:</strong> +${delta} Flesch points</p>\n<p><strong>Processing cost:</strong> $${result.cost_usd.toFixed(5)}</p>\n<hr/>\n<div style=\"font-family:Arial,sans-serif;line-height:1.6;max-width:680px\">\n  <pre style=\"white-space:pre-wrap;font-family:inherit\">${md}</pre>\n</div>\n${hasDiagram ? '<p><em>A visual diagram was generated. Open the NeuroAlign app to view it rendered.</em></p>' : ''}\n    `.trim()\n  }\n}];\n"
+      },
+      "id": "format-output",
+      "name": "Format output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [960, 220],
+      "notes": "Formats the NeuroAlign response into email-ready HTML and a structured summary object.\nAccess fields downstream with: {{ $json.markdown }}, {{ $json.summary.readability_gain }}"
+    },
+    {
+      "parameters": {
+        "jsCode": "const result = $input.first().json;\nreturn [{\n  json: {\n    error: result.error || 'Unknown error',\n    session_id: result.session_id || 'unknown',\n    timestamp: new Date().toISOString()\n  }\n}];\n"
+      },
+      "id": "handle-error",
+      "name": "Format error",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [960, 400],
+      "notes": "Handles pipeline errors. Connect to a notification node (Slack, email) to alert on failures."
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "id": "webhook-response",
+      "name": "Return response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1200, 220],
+      "notes": "Returns the formatted result to the original webhook caller.\nFor async workflows (email delivery), move this node before the email node."
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({status: 'error', error: $json.error}) }}",
+        "options": {
+          "responseCode": 500
+        }
+      },
+      "id": "webhook-error-response",
+      "name": "Return error",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1200, 400]
+    }
+  ],
+  "connections": {
+    "Receive document": {
+      "main": [
+        [{ "node": "NeuroAlign Transform", "type": "main", "index": 0 }]
+      ]
+    },
+    "NeuroAlign Transform": {
+      "main": [
+        [{ "node": "Transform succeeded?", "type": "main", "index": 0 }]
+      ]
+    },
+    "Transform succeeded?": {
+      "main": [
+        [{ "node": "Format output", "type": "main", "index": 0 }],
+        [{ "node": "Format error",  "type": "main", "index": 0 }]
+      ]
+    },
+    "Format output": {
+      "main": [
+        [{ "node": "Return response", "type": "main", "index": 0 }]
+      ]
+    },
+    "Format error": {
+      "main": [
+        [{ "node": "Return error", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": ["neuroalign", "ai", "accessibility", "thesis"],
+  "triggerCount": 1,
+  "updatedAt": "2026-05-28T00:00:00.000Z",
+  "versionId": "1"
+}

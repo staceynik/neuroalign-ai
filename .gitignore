@@ -1,0 +1,11 @@
+.env
+.streamlit/secrets.toml
+data/chroma/
+data/research.db
+data/costs.db
+__pycache__/
+*.py[cod]
+.DS_Store
+venv/
+.venv/
+

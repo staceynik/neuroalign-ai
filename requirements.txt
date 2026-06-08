@@ -1,0 +1,34 @@
+# NeuroAlign AI — Python dependencies
+# Install: pip install -r requirements.txt
+
+# ── Core AI stack ────────────────────────────────────────────────────
+langchain>=0.2.0
+langchain-openai>=0.1.0
+langchain-community>=0.2.0
+langgraph>=0.1.0
+openai>=1.12.0
+
+# ── Structured output & validation ──────────────────────────────────
+pydantic>=2.0.0
+tiktoken>=0.6.0
+
+# ── Vector DB / RAG ─────────────────────────────────────────────────
+chromadb>=0.5.0
+
+# ── Frontend (Streamlit UI) ──────────────────────────────────────────
+streamlit>=1.32.0
+
+# ── REST API / n8n integration (FastAPI) ────────────────────────────
+fastapi>=0.111.0
+uvicorn[standard]>=0.29.0
+httpx>=0.27.0              # async HTTP client (used by FastAPI test client)
+
+# ── Data & metrics ───────────────────────────────────────────────────
+pandas>=2.0.0
+textstat>=0.7.0            # Flesch-Kincaid, Gunning Fog, SMOG
+
+# ── File handling ────────────────────────────────────────────────────
+pypdf>=4.0.0               # PDF text extraction
+
+# ── Environment & config ─────────────────────────────────────────────
+python-dotenv>=1.0.0

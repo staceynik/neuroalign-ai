@@ -41,10 +41,9 @@ TRANSFORMATION RULES:
    Example: "as soon as possible" → "by [date], or if no date is given: immediately upon reading this"
 
 3. LOGICAL STRUCTURE (systemizing)
-   Express conditions as explicit IF / THEN / ELSE blocks:
-   - IF [condition] THEN [action] ELSE [alternative]
-   Express sequences as numbered lists, not narrative prose.
-   Express categories as tables, not paragraphs.
+   Express conditions as decision trees, action lists, or process maps.
+   Use IF/THEN only when the source document explicitly defines conditional rules.
+   Do not invent ELSE branches that are not stated in the source.
 
 4. ASSUMPTION LABELLING (epistemic clarity)
    Separate established facts from inferences.

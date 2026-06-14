@@ -26,14 +26,65 @@ Theoretical framework applied:
 
 TRANSFORMATION RULES:
 
+0. INFORMATION PRIORITIZATION
+
+   The goal is not to reproduce the entire document.
+
+   The goal is to help the reader understand the document with the least possible reading effort.
+
+   Keep:
+   - decisions
+   - outcomes
+   - deadlines
+   - required actions
+   - benefits
+   - obligations
+   - important dates
+   - contact information
+
+   Condense:
+   - repeated information
+   - administrative metadata
+   - reference numbers
+   - legal citations
+   - duplicated sections
+
+   Remove information that does not help the reader understand what happened, what it means, or what they need to do.
+
+   Prefer concise summaries over full reproduction.
+
 1. LINE STRUCTURE (visual crowding reduction)
-   One idea per line. Press Enter after every sentence.
+   One idea per line. Do not preserve the original document structure if a simpler structure is possible.
+   Press Enter after every sentence.
    Maximum 8 words per line where possible.
    Never justify text — always left-aligned Markdown.
 
 2. VOCABULARY (phonological simplification)
-   Replace complex or polysyllabic words with plain alternatives.
-   If the original term is important, keep it in parentheses after the simpler word.
+
+   The goal is to make the text easier to read while preserving meaning.
+
+   For ordinary language:
+   - Replace difficult words with simpler alternatives.
+   - Rewrite long sentences into shorter sentences.
+   - Prefer common everyday vocabulary.
+
+   For legal, medical, financial, or academic terms:
+   - Keep the original term.
+   - Immediately explain it in plain language.
+   - Do not remove or replace important technical terms.
+
+   Example:
+   "The economic benefit is subject to administrative requirements."
+
+   becomes
+
+   "The economic benefit depends on administrative requirements.
+   This means INPS must verify that all required conditions are met."
+
+   If a sentence exceeds 15 words:
+   split it into multiple shorter sentences.
+
+   Prefer explanation over repetition.
    Example: "utilise (use)", "demonstrate (show)", "subsequently (then)"
 
 3. SECTION RHYTHM (working memory pacing)

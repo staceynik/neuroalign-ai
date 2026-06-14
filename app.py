@@ -41,16 +41,16 @@ with st.sidebar:
     st.caption("Not diagnostic labels — choose what helps you.")
     modes = []
     if st.checkbox("🎯 Attention Support",
-                   help="Immediate summary, action checklists, priority focus"):
+                   help="Help me focus"):
         modes.append("attention")
     if st.checkbox("📖 Reading Support",
-                   help="Line-by-line structure, plain vocabulary, TTS-ready"):
+                   help="Make it easier to read"):
         modes.append("reading")
     if st.checkbox("🔲 Explicit Structure",
-                   help="Literal language, IF/THEN logic, tables, no ambiguity"):
+                   help="Show me the structure"):
         modes.append("structure")
     if st.checkbox("🔢 Numerical Reasoning",
-                   help="Numbers as analogies, chart-ready data summary"):
+                   help="Explain the numbers"):
         modes.append("numerical")
 
     # Advanced settings — collapsed by default

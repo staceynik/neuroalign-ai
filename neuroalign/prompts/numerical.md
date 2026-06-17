@@ -29,8 +29,29 @@ Theoretical framework applied:
 
 TRANSFORMATION RULES:
 
-1. NUMBER TRANSLATION (Arabic → verbal + analogue magnitude)
-   Every number, percentage, or statistic must be followed by a real-world analogy.
+1. PRIMARY GOAL
+
+   Do not merely identify numbers.
+
+   Explain why each number matters.
+
+   For every important number answer:
+
+   - What is it?
+   - Why is it important?
+   - What happens if it is missed?
+   - What should the reader remember?
+
+   The explanation is more important than the analogy.
+
+   NUMBER TRANSLATION (Arabic → verbal + analogue magnitude)
+   Every important number, percentage, amount, or deadline must be followed by either:
+
+   - a real-world analogy, OR
+   - a practical explanation, OR
+   - a familiar time comparison.
+
+   Choose whichever makes the number easiest to understand.
    Format: [original number] — [analogy in italics]
    Examples:
    - "47%" → "47% — *nearly half, like 47 people out of a group of 100*"
@@ -52,23 +73,31 @@ TRANSFORMATION RULES:
    "3 out of 4" → "three quarters — most"
    "1 in 20" → "one in twenty — uncommon but not rare"
 
-5. DATA SUMMARY (chart-ready export)
+<!-- 5. DATA SUMMARY (chart-ready export)
    At the end of the document, add: ## 📊 Data Summary
    Inside a JSON code block, list ALL numerical data in this schema:
-   {
-     "data_points": [
-       {
-         "label": "descriptive name of the data point",
-         "value": "original numerical value as string",
-         "unit": "unit of measurement",
-         "analogy": "the real-world comparison you used above"
-       }
-     ]
-   }
-   This block is used by the Visualizer Agent to generate charts.
+   Example schema:
 
-6. REMOVE BARE NUMBERS
-   Never leave a number standing alone without its analogy.
+   data_points:
+   - label
+   - value
+   - unit
+   - analogy
+      This block is used by the Visualizer Agent to generate charts. -->
+
+6. 6. REMOVE UNEXPLAINED IMPORTANT NUMBERS
+
+   Never leave an important number standing alone.
+
+   Every important number should be accompanied by:
+
+   - an analogy, OR
+   - a practical explanation, OR
+   - a familiar comparison.
+
+   Ignore minor reference numbers, document IDs,
+   article numbers, and administrative codes unless
+   they are important for the reader's decisions.
    A sentence like "The study had 847 participants" must become:
    "The study had 847 participants — *about the capacity of a large university lecture hall*"
 

@@ -37,21 +37,28 @@ st.markdown("""
 with st.sidebar:
 
     # Cognitive modes
-    st.markdown("## 🧠 Support Modes")
-    st.caption("Not diagnostic labels — choose what helps you.")
-    modes = []
-    if st.checkbox("🎯 Attention Support",
-                   help="Help me focus"):
-        modes.append("attention")
-    if st.checkbox("📖 Reading Support",
-                   help="Make it easier to read"):
-        modes.append("reading")
-    if st.checkbox("🔲 Explicit Structure",
-                   help="Show me the structure"):
-        modes.append("structure")
-    if st.checkbox("🔢 Numerical Reasoning",
-                   help="Explain the numbers"):
-        modes.append("numerical")
+    st.markdown("## 🧠 Support Mode")
+    st.caption("Choose one type of support.")
+
+    selected_mode = st.radio(
+        "Support",
+        [
+            "🎯 Attention Support",
+            "📖 Reading Support",
+            "🔲 Explicit Structure",
+            "🔢 Numerical Reasoning"
+        ],
+        label_visibility="collapsed"
+    )
+
+    mode_map = {
+        "🎯 Attention Support": "attention",
+        "📖 Reading Support": "reading",
+        "🔲 Explicit Structure": "structure",
+        "🔢 Numerical Reasoning": "numerical"
+    }
+
+    modes = [mode_map[selected_mode]]
 
     # Advanced settings — collapsed by default
     with st.expander("⚙️ Advanced settings", expanded=False):

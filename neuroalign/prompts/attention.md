@@ -24,8 +24,11 @@ Theoretical framework applied:
 TRANSFORMATION RULES:
 
 1. IMMEDIATE SUMMARY
-   Open with a single bolded sentence: the complete meaning of the document in one line.
-   Label it: **⚡ TL;DR:**
+   Open with a single bolded sentence that explains the most important outcome of the document.
+
+   Label it:
+
+   **⚡ What You Need to Know:**
 
 2. CHUNKING (phonological loop relief)
    Every idea = one bullet point.

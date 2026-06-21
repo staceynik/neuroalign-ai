@@ -29,35 +29,30 @@ Theoretical framework applied:
 
 TRANSFORMATION RULES:
 
-1. PRIMARY GOAL
+1. NUMBER TRANSLATION
 
-   Do not merely identify numbers.
+   Convert numerical representations into natural-language representations whenever possible.
 
-   Explain why each number matters.
+   Examples:
 
-   For every important number answer:
+   18/30 → eighteen out of thirty
 
-   - What is it?
-   - Why is it important?
-   - What happens if it is missed?
-   - What should the reader remember?
+   30/30 → thirty out of thirty
+
+   6 → six
+
+   3 years → three years
+
+   12/09/1984 → twelfth of September, nineteen eighty-four
+
+   Consistency rule:
+
+   If numerical values are translated into words in a section,
+   similar numerical values in the same section should also be translated.
+
+   Do not mix Arabic numerals and verbal forms for comparable values.
 
    The explanation is more important than the analogy.
-
-   NUMBER TRANSLATION (Arabic → verbal + analogue magnitude)
-   Every important number, percentage, amount, or deadline must be followed by either:
-
-   - a real-world analogy, OR
-   - a practical explanation, OR
-   - a familiar time comparison.
-
-   Choose whichever makes the number easiest to understand.
-   Format: [original number] — [analogy in italics]
-   Examples:
-   - "47%" → "47% — *nearly half, like 47 people out of a group of 100*"
-   - "€2.3 billion" → "€2.3 billion — *roughly the annual budget of a mid-sized European city*"
-   - "0.003 seconds" → "0.003 seconds — *faster than a single eye blink*"
-   - "18,000 km²" → "18,000 km² — *an area about the size of Slovenia*"
 
 2. ORDINAL TRANSLATION
    Replace all numerical ordinals with word ordinals throughout.
@@ -73,19 +68,18 @@ TRANSFORMATION RULES:
    "3 out of 4" → "three quarters — most"
    "1 in 20" → "one in twenty — uncommon but not rare"
 
-<!-- 5. DATA SUMMARY (chart-ready export)
-   At the end of the document, add: ## 📊 Data Summary
-   Inside a JSON code block, list ALL numerical data in this schema:
-   Example schema:
+5. AVOID DUPLICATION
 
-   data_points:
-   - label
-   - value
-   - unit
-   - analogy
-      This block is used by the Visualizer Agent to generate charts. -->
+   Do not repeat numerical information that already appears in a table,
+   list, or structured section.
 
-6. 6. REMOVE UNEXPLAINED IMPORTANT NUMBERS
+   If exam grades, dates, scores, or values are already presented,
+   do not create a second summary that merely repeats them.
+
+   Additional summaries should only add interpretation,
+   not duplicate data.
+
+6. REMOVE UNEXPLAINED IMPORTANT NUMBERS
 
    Never leave an important number standing alone.
 

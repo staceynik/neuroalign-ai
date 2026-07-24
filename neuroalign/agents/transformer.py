@@ -2,25 +2,25 @@
 Transformer Agent
 =================
 The core rewriting agent. Loads system prompts from neuroalign/prompts/.
-
+ 
 Key architecture decision:
   System message  = ONLY the transformation rules (no variables)
   Human message   = content to transform + profile context + analysis
-
+ 
 This separation ensures the LLM treats rules as instructions,
 not as data to be mixed with profile JSON.
 """
-
+ 
 from pathlib import Path
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_core.output_parsers import StrOutputParser
 from neuroalign.state import NeuroAlignState
 from neuroalign.cost_tracker import CostCallback, SessionCost
-
+ 
 MODEL       = "gpt-4o-mini"
 PROMPTS_DIR = Path(__file__).parent.parent / "prompts"
-
+ 
 # Fallback prompts — used only if .md file is missing on disk
 _FALLBACK_RULES = {
     "attention": """You are NeuroAlign AI, a neurodiversity-affirming content transformer.
@@ -33,7 +33,7 @@ Rules:
 - H2 headers for every major theme
 - Max 2 sentences per paragraph
 - Remove filler, passive voice, abstract commentary""",
-
+ 
     "reading": """You are NeuroAlign AI, a neurodiversity-affirming content transformer.
 Transform content for a user who prefers Reading Support. NOT a diagnosis.
 Rules:
@@ -43,7 +43,7 @@ Rules:
 - Bold max 3 key terms per section
 - No nested parentheticals (for TTS compatibility)
 - Left-aligned only""",
-
+ 
     "structure": """You are NeuroAlign AI, a neurodiversity-affirming content transformer.
 Transform content for a user who prefers Explicit Structure. NOT a diagnosis.
 Rules:
@@ -54,13 +54,13 @@ Rules:
 - Key Facts table at top: Topic | Value
 - Exact numbers and dates only — never "several", "many", "soon"
 - Separate stated facts from assumptions""",
-
+ 
     "numerical": """You are NeuroAlign AI, a neurodiversity-affirming content transformer.
 Transform content for a user who prefers Numerical Reasoning Support. NOT a diagnosis.
-
+ 
 CRITICAL RULE: Convert EVERY Arabic numeral (0-9) and Roman numeral to words.
 No digit may remain in the final output.
-
+ 
 Rules:
 - 1859 → eighteen fifty-nine
 - (1859-1947) → (born eighteen fifty-nine, died nineteen forty-seven)
@@ -72,8 +72,8 @@ Rules:
 - For large numbers: add a real-world scale anchor
 - BEFORE outputting: scan for any remaining digit and rewrite that sentence""",
 }
-
-
+ 
+ 
 def _load_rules(mode: str) -> str:
     """Load from prompts/*.md (rules only, no {variables}), fallback to inline."""
     f = PROMPTS_DIR / f"{mode}.md"
@@ -87,37 +87,41 @@ def _load_rules(mode: str) -> str:
         )]
         return "\n".join(clean).strip()
     return _FALLBACK_RULES.get(mode, _FALLBACK_RULES["attention"])
-
-
+ 
+ 
 def transformer_agent(state: NeuroAlignState) -> dict:
     profile      = state["cognitive_profile"]
     modes        = profile.get("modes", [])
     session_cost: SessionCost = state.get("session_cost")  # type: ignore
     callbacks    = [CostCallback(session_cost, "transformer", MODEL)] if session_cost else []
-
+ 
     # System message = pure rules, no variable substitution
     rules = "\n\n---\n\n".join(_load_rules(m) for m in modes) or _FALLBACK_RULES["attention"]
-
+ 
     # Human message = content + context (kept separate so rules stay clean)
     human_content = f"""Transform this content.
-
+ 
+TRANSFORMATION CONSTRAINTS (apply to all modes):
+- Preserve the original document structure.
+- Do not add headings, bullet points, or sections not present in the original.
+- Do not summarize, reorganize, or omit content.
+- Only perform the transformations required by the system instructions.
+ 
 COGNITIVE PROFILE: {str(profile)}
-
-CONTENT ANALYSIS SUMMARY:
+ 
+DOCUMENT CONTEXT:
 - Main topic: {state['content_analysis'].get('main_topic', 'unknown')}
 - Document type: {state['content_analysis'].get('document_type', 'unknown')}
-- Key points: {str(state['content_analysis'].get('key_points', [])[:3])}
-- Past preferences: {str(profile.get('known_preferences', []))}
-
+ 
 CONTENT TO TRANSFORM:
 {state['raw_input']}"""
-
+ 
     llm = ChatOpenAI(model=MODEL, temperature=0, callbacks=callbacks)
-
+ 
     messages = [
         SystemMessage(content=rules),
         HumanMessage(content=human_content),
     ]
-
+ 
     transformed = (llm | StrOutputParser()).invoke(messages)
     return {"transformed_output": {"text": transformed}}

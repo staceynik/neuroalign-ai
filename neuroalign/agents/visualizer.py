@@ -15,9 +15,6 @@ from neuroalign.cost_tracker import CostCallback, SessionCost
 MODEL = "gpt-4o-mini"
 
 class VisualizerOutput(BaseModel):
-    final_markdown: str = Field(
-        description="Complete clean Markdown document ready for rendering."
-    )
     mermaid_diagram: Optional[str] = Field(
         default=None,
         description="Valid Mermaid.js diagram code (no fences) if the content has "
@@ -42,20 +39,26 @@ TRANSFORMED CONTENT:
 """
 
 def visualizer_agent(state: NeuroAlignState) -> dict:
-    profile      = state["cognitive_profile"]
-    session_cost: SessionCost = state.get("session_cost")  # type: ignore
+    profile = state["cognitive_profile"]
+    modes = profile.get("modes", [])
+
+    session_cost: SessionCost = state.get("session_cost")
     callbacks    = [CostCallback(session_cost, "visualizer", MODEL)] if session_cost else []
 
-    llm    = ChatOpenAI(model=MODEL, temperature=0, callbacks=callbacks)
+    llm = ChatOpenAI(model=MODEL, temperature=0, callbacks=callbacks)
+
+    print("===== VISUALIZER START =====")
+
     result: VisualizerOutput = llm.with_structured_output(VisualizerOutput).invoke(
         VISUALIZER_PROMPT.format(
-            modes          = str(profile.get("modes", [])),
-            visual_support = profile.get("visual_support", "medium"),
-            transformed    = state["transformed_output"]["text"],
+            modes=str(profile.get("modes", [])),
+            visual_support=profile.get("visual_support", "medium"),
+            transformed=state["transformed_output"]["text"],
         )
     )
+
+    print("===== VISUALIZER END =====")
     return {
-        "final_markdown":  result.final_markdown,
-        "mermaid_diagram": result.mermaid_diagram,
-        "chart_data":      None,
-    }
+        "final_markdown": state["transformed_output"]["text"],
+        "mermaid_diagram": result.mermaid_diagram
+}

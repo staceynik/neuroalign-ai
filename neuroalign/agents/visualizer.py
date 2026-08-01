@@ -42,13 +42,18 @@ def visualizer_agent(state: NeuroAlignState) -> dict:
     profile = state["cognitive_profile"]
     modes = profile.get("modes", [])
 
+# These modes already produce their final output in the Transformer.
+# Skip the second LLM pass to preserve formatting and reduce latency.
+    if any(mode in modes for mode in ["reading", "numerical", "structure"]):
+        return {
+            "final_markdown": state["transformed_output"]["text"],
+            "mermaid_diagram": None,
+        }
+
     session_cost: SessionCost = state.get("session_cost")
     callbacks    = [CostCallback(session_cost, "visualizer", MODEL)] if session_cost else []
 
     llm = ChatOpenAI(model=MODEL, temperature=0, callbacks=callbacks)
-
-    print("===== VISUALIZER START =====")
-
     result: VisualizerOutput = llm.with_structured_output(VisualizerOutput).invoke(
         VISUALIZER_PROMPT.format(
             modes=str(profile.get("modes", [])),
@@ -57,7 +62,6 @@ def visualizer_agent(state: NeuroAlignState) -> dict:
         )
     )
 
-    print("===== VISUALIZER END =====")
     return {
         "final_markdown": state["transformed_output"]["text"],
         "mermaid_diagram": result.mermaid_diagram

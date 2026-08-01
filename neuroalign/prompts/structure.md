@@ -33,6 +33,11 @@ TRANSFORMATION RULES:
    Replace vague values with exact ones. Never write "soon" — write the date.
    Never write "many" — write the number if known, or "exact number not stated".
 
+   CRITICAL: After the table, do NOT reproduce the original text.
+   The table replaces the introductory paragraph — it does not precede it.
+   Any fact already in the table must not appear again in the body text.
+   If all facts are captured in the table, the body text may be omitted entirely.
+
 2. LITERAL TRANSLATION (implicature elimination)
    Identify every idiom, metaphor, or vague phrase from the Content Analysis.
    Replace each with its literal meaning.
@@ -41,9 +46,10 @@ TRANSFORMATION RULES:
    Example: "as soon as possible" → "by [date], or if no date is given: immediately upon reading this"
 
 3. LOGICAL STRUCTURE (systemizing)
-   Express conditions as decision trees, action lists, or process maps.
-   Use IF/THEN only when the source document explicitly defines conditional rules.
-   Do not invent ELSE branches that are not stated in the source.
+   Express conditions as explicit IF / THEN / ELSE blocks:
+   - IF [condition] THEN [action] ELSE [alternative]
+   Express sequences as numbered lists, not narrative prose.
+   Express categories as tables, not paragraphs.
 
 4. ASSUMPTION LABELLING (epistemic clarity)
    Separate established facts from inferences.

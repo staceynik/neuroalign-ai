@@ -101,11 +101,16 @@ def transformer_agent(state: NeuroAlignState) -> dict:
     # Human message = content + context (kept separate so rules stay clean)
     human_content = f"""Transform this content.
  
+
 TRANSFORMATION CONSTRAINTS (apply to all modes):
-- Preserve the original document structure.
-- Do not add headings, bullet points, or sections not present in the original.
-- Do not summarize, reorganize, or omit content.
-- Only perform the transformations required by the system instructions.
+- Preserve the source language throughout the entire output, including summaries, headings, labels, and key points.
+- Preserve facts, numerical values, qualifications, and attribution.
+- Do not invent explanations, tasks, conclusions, or causal relationships.
+- Distinguish the source author's claims from established facts.
+- Preserve every substantive idea unless the selected mode explicitly permits summarization or omission.
+- Structural changes are allowed when required by the selected mode.
+- Any summary must remain faithful to the source.
+- Do not introduce grammatical errors or change the original meaning.
  
 COGNITIVE PROFILE: {str(profile)}
  

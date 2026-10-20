@@ -10,12 +10,45 @@ Cost is tracked via CostCallback attached to the LLM instance.
 """
 
 from pydantic import BaseModel, Field
-from typing import List
+from typing import List, Optional, Literal
 from langchain_openai import ChatOpenAI
 from neuroalign.state import NeuroAlignState
 from neuroalign.cost_tracker import CostCallback, SessionCost
 
 MODEL = "gpt-4o-mini"
+
+class Concept(BaseModel):
+    id: str
+    label: str
+    description: str
+    source_excerpt: str
+
+
+class Relation(BaseModel):
+    source_id: str
+    target_id: str
+    relation_type: Literal[
+        "is_a",
+        "causes",
+        "explains",
+        "leads_to",
+        "contrasts_with",
+        "influences",
+        "is_example_of",
+        "is_part_of",
+        "is_attributed_to",
+        "is_used_for",
+        "other",
+    ]
+    explanation: str
+    source_excerpt: str
+
+
+class ContentBlock(BaseModel):
+    id: str
+    title: str
+    concept_ids: List[str]
+    source_excerpt: str
 
 class ContentAnalysis(BaseModel):
     main_topic:        str       = Field(description="One-sentence summary of what this text is about")
@@ -26,6 +59,10 @@ class ContentAnalysis(BaseModel):
     numerical_data:    List[str] = Field(description="All numbers, percentages, statistics found in the text")
     cognitive_load:    str       = Field(description="Estimated complexity: low / medium / high / very high")
     document_type:     str       = Field(description="e.g. academic article, task list, email, news article, instructions")
+
+concepts: List[Concept] = Field(default_factory=list)
+relations: List[Relation] = Field(default_factory=list)
+content_blocks: List[ContentBlock] = Field(default_factory=list)
 
 ANALYZER_PROMPT = """You are a cognitive accessibility analyst.
 Analyze the following content carefully.

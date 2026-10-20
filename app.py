@@ -253,15 +253,17 @@ with tab_output:
 
     st.divider()
 
-    # Transformed content
+    
+    # Main idea and transformed content
     st.markdown("### 📄 Transformed Content")
-    st.markdown(output.final_markdown)
 
-    # Mermaid diagram
+    # Visual Map — show before the detailed text
     if output.mermaid_diagram:
-        st.divider()
         st.markdown("### 🗺️ Visual Map")
         render_mermaid(output.mermaid_diagram)
+        st.divider()
+
+    st.markdown(output.final_markdown)
 
     # Chart data
     if output.chart_data and output.chart_data.get("data_points"):

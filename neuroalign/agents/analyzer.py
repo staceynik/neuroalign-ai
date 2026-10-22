@@ -51,23 +51,81 @@ class ContentBlock(BaseModel):
     source_excerpt: str
 
 class ContentAnalysis(BaseModel):
-    main_topic:        str       = Field(description="One-sentence summary of what this text is about")
-    key_points:        List[str] = Field(description="The 3-7 most important concepts or arguments")
-    actions:           List[str] = Field(description="Explicit action items or tasks mentioned")
-    deadlines:         List[str] = Field(description="Any dates, deadlines, or time references")
-    ambiguous_phrases: List[str] = Field(description="Idioms, metaphors, or vague language that may confuse literal readers")
-    numerical_data:    List[str] = Field(description="All numbers, percentages, statistics found in the text")
-    cognitive_load:    str       = Field(description="Estimated complexity: low / medium / high / very high")
-    document_type:     str       = Field(description="e.g. academic article, task list, email, news article, instructions")
+    
+    document_type: str = Field(
+        description="e.g. academic article, task list, email, news article, instructions"
+    )
 
-concepts: List[Concept] = Field(default_factory=list)
-relations: List[Relation] = Field(default_factory=list)
-content_blocks: List[ContentBlock] = Field(default_factory=list)
+    concepts: List[Concept] = Field(
+        default_factory=list,
+        description="Important concepts identified in the source"
+    )
+    relations: List[Relation] = Field(
+        default_factory=list,
+        description="Relationships between concepts explicitly supported by the source"
+    )
+    content_blocks: List[ContentBlock] = Field(
+        default_factory=list,
+        description="Meaningful groups of concepts supported by the source"
+    )
+    map_structure_type: Literal[
+        "concept_group",
+        "hierarchy",
+        "sequence",
+        "comparison",
+        "causal",
+        "mixed",
+        "unclear"
+    ] = Field(
+        description="Dominant structure best suited for a visual overview"
+    )
+
 
 ANALYZER_PROMPT = """You are a cognitive accessibility analyst.
+
 Analyze the following content carefully.
 Be exhaustive with actions, deadlines, ambiguous phrases, and numerical data.
 Do not transform or rewrite the content — only analyze its structure.
+
+CONCEPTS:
+- Extract the important concepts needed to understand the source.
+- Give each concept a unique ID.
+- Preserve the source terminology and meaning.
+- Include a short description and a supporting source excerpt.
+
+RELATIONS:
+- Identify meaningful relationships between extracted concepts.
+- Use source and target concept IDs.
+- Select relation types that accurately describe the source.
+- Do not invent causal, hierarchical, or other relationships.
+- Include a supporting source excerpt for every relation.
+
+CONTENT BLOCKS:
+- Group concepts only when the source supports a meaningful grouping.
+- Give each block a unique ID and a concise title.
+- Reference concepts using their IDs.
+- Do not create artificial categories just to make a map look balanced.
+- Concepts may remain ungrouped if no meaningful grouping is supported.
+
+VISUAL MAP STRUCTURE:
+Choose the dominant structure for a compact visual overview:
+- concept_group: a set of related concepts at a similar level
+- hierarchy: concepts organized into parent-child levels
+- sequence: ordered stages or events
+- comparison: items compared along shared dimensions
+- causal: explicitly supported cause-and-effect relationships
+- mixed: multiple important structural patterns
+- unclear: insufficient evidence for a reliable structure
+
+Choose based on the relationships expressed in the source,
+not on the number of concepts or the desired appearance of the map.
+
+For educational material with many concepts:
+- Identify meaningful groups when supported by the source.
+- Distinguish main concepts from their explanations and examples.
+- Avoid treating every detail as an equally important top-level node.
+- Do not omit important concepts merely to reduce map size.
+- If the source does not support meaningful groups, do not invent them.
 
 CONTENT:
 {text}
@@ -80,7 +138,12 @@ def content_analyzer_agent(state: NeuroAlignState) -> dict:
     llm = ChatOpenAI(model=MODEL, temperature=0, callbacks=callbacks)
     structured_llm = llm.with_structured_output(ContentAnalysis)
 
+    
     result: ContentAnalysis = structured_llm.invoke(
         ANALYZER_PROMPT.format(text=state["raw_input"])
     )
+
+    print("\n=== CONTENT ANALYSIS ===")
+    print(result.model_dump_json(indent=2, ensure_ascii=False))
+
     return {"content_analysis": result.model_dump()}

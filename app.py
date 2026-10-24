@@ -254,16 +254,35 @@ with tab_output:
     st.divider()
 
     
-    # Main idea and transformed content
-    st.markdown("### 📄 Transformed Content")
-
-    # Visual Map — show before the detailed text
-    if output.mermaid_diagram:
-        st.markdown("### 🗺️ Visual Map")
-        render_mermaid(output.mermaid_diagram)
-        st.divider()
-
-    st.markdown(output.final_markdown)
+    # Attention mode: the generated infographic is the primary result.
+    # Keep the adapted text available as a fallback and accessible alternative.
+    if modes == ["attention"]:
+        if output.infographic_bytes:
+            st.markdown("### 🧠 Your infographic")
+            st.image(output.infographic_bytes, use_container_width=True)
+            st.download_button(
+                "⬇️ Download infographic (PNG)",
+                data=output.infographic_bytes,
+                file_name="neuroalign_infographic.png",
+                mime="image/png",
+            )
+            with st.expander("📄 Adapted text (accessible alternative)", expanded=False):
+                st.markdown(output.final_markdown)
+        else:
+            if output.infographic_error:
+                st.warning(
+                    "The infographic could not be generated. Your adapted text is "
+                    "available below. Details: " + output.infographic_error
+                )
+            st.markdown("### 📄 Transformed Content")
+            st.markdown(output.final_markdown)
+    else:
+        st.markdown("### 📄 Transformed Content")
+        if output.mermaid_diagram:
+            st.markdown("### 🗺️ Visual Map")
+            render_mermaid(output.mermaid_diagram)
+            st.divider()
+        st.markdown(output.final_markdown)
 
     # Chart data
     if output.chart_data and output.chart_data.get("data_points"):
@@ -281,6 +300,8 @@ with tab_output:
             c3.metric("Agent calls",   len(cost.get("per_agent",[])))
             c4.metric("Most expensive", cost.get("most_expensive_agent","—"))
             st.caption(f"Total cost today: ${total_cost_today():.4f}")
+            if modes == ["attention"] and output.infographic_bytes:
+                st.caption("Note: image-generation API cost is not included in this token-cost total.")
 
     st.divider()
 

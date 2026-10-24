@@ -79,6 +79,21 @@ class ContentAnalysis(BaseModel):
     ] = Field(
         description="Dominant structure best suited for a visual overview"
     )
+    main_topic: str = Field(
+    description="The central topic of the source, expressed in the source language"
+    )
+
+    cognitive_load: Literal[
+        "low",
+        "medium",
+        "high"
+    ] = Field(
+        description=(
+            "Estimated cognitive load of the source material, based on "
+            "concept density, complexity of relationships, terminology, "
+            "and information structure"
+        )
+    )
 
 
 ANALYZER_PROMPT = """You are a cognitive accessibility analyst.

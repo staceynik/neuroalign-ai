@@ -35,3 +35,5 @@ class NeuroAlignState(TypedDict, total=False):
     final_markdown:  str
     mermaid_diagram: Optional[str]
     chart_data:      Optional[Dict[str, Any]]
+    infographic_bytes: Optional[bytes]
+    infographic_error: Optional[str]

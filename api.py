@@ -15,6 +15,7 @@ n8n integration:
 """
 
 from typing import Optional, List
+import base64
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -100,6 +101,8 @@ class TransformResponse(BaseModel):
     final_markdown:   str
     mermaid_diagram:  Optional[str]
     chart_data:       Optional[dict]
+    infographic_base64: Optional[str] = None
+    infographic_error: Optional[str] = None
     content_analysis: dict
     readability:      dict
     cost:             dict
@@ -193,6 +196,11 @@ async def transform(request: TransformRequest):
         final_markdown   = output.final_markdown,
         mermaid_diagram  = output.mermaid_diagram,
         chart_data       = output.chart_data,
+        infographic_base64 = (
+            base64.b64encode(output.infographic_bytes).decode("ascii")
+            if output.infographic_bytes else None
+        ),
+        infographic_error = output.infographic_error,
         content_analysis = output.content_analysis,
         readability      = output.readability,
         cost             = output.cost,

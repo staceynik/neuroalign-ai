@@ -56,6 +56,8 @@ class PipelineOutput:
     final_markdown:   str
     mermaid_diagram:  Optional[str]
     chart_data:       Optional[dict]
+    infographic_bytes: Optional[bytes]
+    infographic_error: Optional[str]
     content_analysis: dict
     readability:      dict
     cost:             dict
@@ -103,6 +105,7 @@ def run_pipeline(inp: PipelineInput) -> PipelineOutput:
         return PipelineOutput(
             session_id=session_id, status="error",
             final_markdown="", mermaid_diagram=None, chart_data=None,
+            infographic_bytes=None, infographic_error=None,
             content_analysis={}, readability={}, cost={},
             duration_seconds=round(time.time() - t_start, 2),
             error=str(e),
@@ -157,6 +160,8 @@ def run_pipeline(inp: PipelineInput) -> PipelineOutput:
         final_markdown   = final_md,
         mermaid_diagram  = result.get("mermaid_diagram"),
         chart_data       = result.get("chart_data"),
+        infographic_bytes = result.get("infographic_bytes"),
+        infographic_error = result.get("infographic_error"),
         content_analysis = result.get("content_analysis", {}),
         readability      = readability,
         cost             = cost_summary,

@@ -45,15 +45,25 @@ Rules:
 - Left-aligned only""",
  
     "structure": """You are NeuroAlign AI, a neurodiversity-affirming content transformer.
-Transform content for a user who prefers Explicit Structure. NOT a diagnosis.
+Transform content for a user who prefers Explicit Structure. This is an accessibility preference, NOT a diagnosis.
+
 Rules:
-- Translate ALL idioms and metaphors to literal statements
-- Use tables, numbered lists, definition blocks
-- Start every section with "What this means:"
-- Express conditions as IF / THEN / ELSE
-- Key Facts table at top: Topic | Value
-- Exact numbers and dates only — never "several", "many", "soon"
-- Separate stated facts from assumptions""",
+- Start with a Key Facts table using the format Topic | Value.
+- Include key facts supported by the source, such as the main topic, author, key figures, dates, theories, and important concepts when relevant.
+- Do not invent missing facts. If a relevant detail is not specified in the source, do not guess.
+- Use the structure that best represents the content: definitions, lists, hierarchies, sequences, comparison tables, or explicit relationships.
+- Use numbered lists only when order or sequence matters.
+- Use IF / THEN / ELSE only when the source describes an actual conditional relationship, decision rule, or procedure.
+- Do not convert descriptive, historical, theoretical, or definitional statements into conditional rules.
+- Clarify idioms, metaphors, and ambiguous expressions only when needed for understanding. Preserve meaningful metaphors and technical terminology.
+- Make relationships between concepts explicit when they are supported by the source. Do not invent causal relationships, explanations, assumptions, or conclusions.
+- Distinguish stated facts from interpretations and assumptions when relevant. Preserve the author's attribution and level of certainty.
+- Explain the significance or implications of a concept only when doing so adds useful information. Do not start every section with "What this means:".
+- Avoid repeating facts from the Key Facts table unless additional explanation or context is needed.
+- Preserve the substantive information, arguments, and important details of the source.
+- Use exact numbers and dates when provided. Do not replace precise information with vague expressions such as "several", "many", or "soon".
+- Do not create additional sections or formatting solely to satisfy a rule.
+""",
  
     "numerical": """You are NeuroAlign AI, a neurodiversity-affirming content transformer.
 Transform content for a user who prefers Numerical Reasoning Support. NOT a diagnosis.
@@ -87,6 +97,14 @@ def _load_rules(mode: str) -> str:
         )]
         return "\n".join(clean).strip()
     return _FALLBACK_RULES.get(mode, _FALLBACK_RULES["attention"])
+    print("\n=== ACTIVE MODES ===")
+    print(modes)
+
+    print("\n=== ACTIVE SYSTEM PROMPT ===")
+    print(rules)
+
+    print("\n=== SOURCE TEXT PREVIEW ===")
+    print(state["raw_input"][:500])
  
  
 def transformer_agent(state: NeuroAlignState) -> dict:
@@ -103,7 +121,11 @@ def transformer_agent(state: NeuroAlignState) -> dict:
  
 
 TRANSFORMATION CONSTRAINTS (apply to all modes):
-- Preserve the source language throughout the entire output, including summaries, headings, labels, and key points.
+- Detect the language of the source content and use that same language for the entire transformed output.
+- All generated text must remain in the source language, including headings, table headers, table values, labels, summaries, explanations, and bullet points.
+- Do not translate the source content into English or any other language unless the user explicitly requests translation.
+- Examples and formatting rules written in English do not override this requirement.
+- Preserve proper names and technical terms in their original form when appropriate.
 - Preserve facts, numerical values, qualifications, and attribution.
 - Do not invent explanations, tasks, conclusions, or causal relationships.
 - Distinguish the source author's claims from established facts.

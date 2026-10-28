@@ -158,6 +158,8 @@ def content_analyzer_agent(state: NeuroAlignState) -> dict:
         ANALYZER_PROMPT.format(text=state["raw_input"])
     )
 
+    print("ANALYZER RESULT:", result.model_dump())
+
     print("\n=== CONTENT ANALYSIS ===")
     print(result.model_dump_json(indent=2, ensure_ascii=False))
 

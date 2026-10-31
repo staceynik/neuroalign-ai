@@ -142,6 +142,17 @@ For educational material with many concepts:
 - Do not omit important concepts merely to reduce map size.
 - If the source does not support meaningful groups, do not invent them.
 
+LANGUAGE PRESERVATION:
+- Detect the language of the source text.
+- Write all generated human-readable analysis fields in the same
+  language as the source text.
+- This includes concept labels, descriptions, relation explanations,
+  content block titles, the main topic, and the document type.
+- Preserve source excerpts exactly in their original language.
+- Do not translate analysis fields into English unless the source
+  text is in English.
+- Keep structured field names and enum values unchanged.
+
 CONTENT:
 {text}
 """

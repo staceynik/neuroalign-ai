@@ -117,12 +117,6 @@ with st.sidebar:
              "Healthcare", "Creative / Arts", "Other"],
             index=None, placeholder="Select..."
         )
-        demographics["self_declared_support_need"] = st.select_slider(
-            "How much do you feel you need cognitive support right now?",
-            options=["None", "A little", "Moderate", "High", "Very high"],
-            value="Moderate",
-            help="Replaces fatigue slider — focuses on support need rather than tiredness."
-        )
 
     st.divider()
     st.caption("NeuroAlign AI — Thesis PoC\nNot a diagnostic tool.")
